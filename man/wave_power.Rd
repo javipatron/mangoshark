@@ -2,22 +2,22 @@
 % Please edit documentation in R/wave_power.R
 \name{wave_power}
 \alias{wave_power}
-\title{Wave Power calculation}
+\title{Wave Power Calculation}
 \usage{
-wave_power(d, g, pi, h, t)
+wave_power(density, gravity, pi, height, time)
 }
 \arguments{
-\item{d}{water density (kg / m^3)}
+\item{density}{water density (kg / m^3)}
 
-\item{g}{acceleration due to gravity (m / s ^ 2)}
+\item{gravity}{acceleration due to gravity (m / s ^ 2)}
 
 \item{pi}{pi number (3.1416)}
 
-\item{h}{wave height (m)}
+\item{height}{wave height (m)}
 
-\item{t}{wave period
+\item{time}{wave period
 #'}
 }
 \description{
-Wave Power calculation
+Wave Power Calculation
 }

@@ -1,4 +1,4 @@
-#' Wave Power calculation
+#' Wave Power Calculation
 #'
 #' @param density water density (kg / m^3)
 #' @param gravity acceleration due to gravity (m / s ^ 2)
