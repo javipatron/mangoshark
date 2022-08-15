@@ -1,0 +1,183 @@
+---
+title: "Electric_vs_Gas_comparison"
+author: "Javier Patron"
+date: "2022-08-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+### In this Markdown document we will create a model on rental cars prices so you can select the best option
+
+### Electric Car Price
+
+Variables: Total Days, Rental Cost (per day), Total Distance planned , Fully Charge Cost, Range (miles)
+
+```{r}
+
+tot_e_cost <- function(tot_days, rent_cost, dist_plan, full_tank_cost, range) {
+  tot_e_cost = tot_days * rent_cost + (dist_plan * full_tank_cost)/range
+  print(tot_e_cost)
+}
+
+```
+
+## Test e-car
+
+Total Days: 3
+
+Rental Car price (per day): \$60
+
+Total trip distance planned (miles): 105.5 \* 2
+
+Cost to charge a full battery Cost (dlls) : \$18.29
+
+Range (miles): Tesla Model S: 405 miles
+
+```{r}
+e_cost <- tot_e_cost(tot_days = 1, rent_cost = 60, dist_plan = c(400,500,600), full_tank_cost = 18.29, range = 405)
+
+```
+
+### Fuel Car Price
+
+Variables: Total Days, Rental Cost (per day), Total Distance planned , Full Tank Cost, Range (miles)
+
+```{r}
+tot_fuel_cost <- function(tot_days, rent_cost, dist_plan, full_tank_cost, range) {
+  tot_fuel_cost = tot_days * rent_cost + (dist_plan * full_tank_cost)/range
+  print(tot_fuel_cost)
+        
+}
+```
+
+## Test fueled car
+
+Total days: 3
+
+Rental car price (per day): \$40
+
+Total trip distance planned (miles): 105.5 \* 2
+
+Cost fill the tank (dlls) : \$51.50
+
+Range (miles): Honda Civic : 446 miles
+
+```{r}
+fuel_cost <- tot_fuel_cost(tot_days = 1, rent_cost = 40, dist_plan = c(400, 500, 600), full_tank_cost = 51.50, range = 446)
+```
+
+## All togetherLets make a data.frame of the different options
+
+Vectors with the Electric Vehiacle Day 1, Different distances
+
+```{r}
+
+e_day_1 <- tot_e_cost(1,60,seq(from=100, to=2500, by=100), 18.29, 405)
+e_day_2 <- tot_e_cost(2,60,seq(from=100, to=2500, by=100), 18.29, 405)
+e_day_3 <- tot_e_cost(3,60,seq(from=100, to=2500, by=100), 18.29, 405)
+e_day_4 <- tot_e_cost(4,60,seq(from=100, to=2500, by=100), 18.29, 405)
+e_day_5 <- tot_e_cost(5,60,seq(from=100, to=2500, by=100), 18.29, 405)
+```
+
+Vectors with the Fuel Veiacle Day 1, Different distances
+
+```{r}
+fuel_day_1 <- tot_fuel_cost(1, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+fuel_day_2 <- tot_fuel_cost(2, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+fuel_day_3 <- tot_fuel_cost(3, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+fuel_day_4 <- tot_fuel_cost(4, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+fuel_day_5 <- tot_fuel_cost(5, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+```
+
+Create the Data Frame
+
+```{r}
+comp_1_df <- data.frame(distance = seq(80,2000,80),e1 = e_day_1, f1 = fuel_day_1, e2 = e_day_2, f2 = fuel_day_2, f3 = fuel_day_3, e3 = e_day_3, e4 = e_day_4, f4 = fuel_day_4, e5 = e_day_5, f5 = fuel_day_5)
+```
+
+Graph
+
+ggplot(economics, aes(x=date)) + geom_line(aes(y = psavert), color = "darkred") + geom_line(aes(y = uempmed), color="steelblue",
+
+```{r}
+ggplot(comp_1_df, aes(x=distance))+
+  geom_line(aes(y= e1), color = "red") +
+  geom_line(aes(y= f1), color = "darkred") +
+  geom_line(aes(y= e2), color = "blue", linetype = "twodash") +
+  geom_line(aes(y= f2), color = "darkblue", linetype = "twodash") +
+  geom_line(aes(y= e3), color = "green", linetype = "longdash") +
+  geom_line(aes(y= f3), color = "darkgreen", linetype = "longdash") +
+  geom_line(aes(y= e4), color = "orange", linetype = "dotdash") +
+  geom_line(aes(y= f4), color = "darkorange", linetype = "dotdash") +
+  geom_line(aes(y= e5), color = "gray", linetype = "dashed") +
+  geom_line(aes(y= f5), color = "darkgray", linetype = "dashed") +
+  labs(title = "Electric vs. Fuel Rental Vehicles", x = "Distance(Miles)", y= "Total Cost (dls $)") + 
+  scale_color_manual(name = "lines")
+```
+
+### Find the intersection point between the lines on the same days
+
+```{r}
+
+#EQUIATION FOR E1
+# y = mx + b
+# m = (y2 -y1) / (x2 - x1)
+
+# Calculate m
+m_e1 <- (comp_1_df$e1[[2]]-comp_1_df$e1[[1]]) / (comp_1_df$distance[[2]]- comp_1_df$distance[[1]] )
+
+# Calculate b of point 1 (80, 64.5)
+b_e1 <- comp_1_df$e1[[1]] - (m_e1 * comp_1_df$distance[[1]]) 
+b_e1
+
+```
+
+```{r}
+
+#EQUIATION FOR F1
+# y = mx + b
+# m = (y2 -y1) / (x2 - 11)
+
+# Calculate m
+m_f1 <- (comp_1_df$f1[[2]]-comp_1_df$f1[[1]]) / (comp_1_df$distance[[2]]- comp_1_df$distance[[1]])
+m_f1
+
+# Calculate b of point 2 (80, 51.54)
+b_f1 <- comp_1_df$f1[[1]] - (m_f1 * comp_1_df$distance[[1]]) 
+b_f1
+```
+
+Create a function to get X value for the intersection point
+
+```{r}
+
+#Electric line
+# e1 equation: y = m_e1 * x + b_e1
+# system equation = -m_e1 * x + y = b_e1
+
+#Fuel line
+# f1 equation: y = m_f1 * x + b_f1
+# system equation = -m_f1 * x + y = b_f1
+
+
+A <- rbind(c(-m_e1, 1), c(-m_f1, 1))
+B <- c(b_e1, b_f1)
+
+solve(A,B)
+
+```
+
+```{r}
+# Question: how can you extrapolate a line given by points to infinate limits ??
+ggplot(data = comp_1_df, aes(x = distance)) + 
+  geom_line(aes(y=e1)) +
+  xlim(-10,10) + 
+  ylim(-10,100)
+```
