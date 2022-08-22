@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-### In this Markdown document we will create a model on rental cars prices so you can select the best option
+### In this Markdown document we will create a model on rental cars prices so you can select the best option regarding price and carbon offset
 
 ### Electric Car Price
 
@@ -21,10 +21,12 @@ Variables: Total Days, Rental Cost (per day), Total Distance planned , Fully Cha
 
 ```{r}
 
-tot_e_cost <- function(tot_days, rent_cost, dist_plan, full_tank_cost, range) {
-  tot_e_cost = tot_days * rent_cost + (dist_plan * full_tank_cost)/range
+tot_e_cost <- function(tot_days, rent_cost, dist_plan, full_battery_cost, range) {
+  tot_e_cost = tot_days * rent_cost + (dist_plan * full_battery_cost)/range
   print(tot_e_cost)
 }
+
+
 
 ```
 
@@ -41,7 +43,7 @@ Cost to charge a full battery Cost (dlls) : \$18.29
 Range (miles): Tesla Model S: 405 miles
 
 ```{r}
-e_cost <- tot_e_cost(tot_days = 1, rent_cost = 60, dist_plan = c(400,500,600), full_tank_cost = 18.29, range = 405)
+e_cost <- tot_e_cost(tot_days = 3, rent_cost = 60, dist_plan = 105.5, full_battery_cost = 18.29, range = 405)
 
 ```
 
@@ -70,30 +72,30 @@ Cost fill the tank (dlls) : \$51.50
 Range (miles): Honda Civic : 446 miles
 
 ```{r}
-fuel_cost <- tot_fuel_cost(tot_days = 1, rent_cost = 40, dist_plan = c(400, 500, 600), full_tank_cost = 51.50, range = 446)
+fuel_cost <- tot_fuel_cost(tot_days = 3, rent_cost = 40, dist_plan = 105.5*2, full_tank_cost = 51.50, range = 446)
 ```
 
-## All togetherLets make a data.frame of the different options
+## Lets make a data.frame with different distances
 
-Vectors with the Electric Vehiacle Day 1, Different distances
+Vectors with the Electric Vehicle Day 1, Different distances
 
 ```{r}
 
-e_day_1 <- tot_e_cost(1,60,seq(from=100, to=2500, by=100), 18.29, 405)
-e_day_2 <- tot_e_cost(2,60,seq(from=100, to=2500, by=100), 18.29, 405)
-e_day_3 <- tot_e_cost(3,60,seq(from=100, to=2500, by=100), 18.29, 405)
-e_day_4 <- tot_e_cost(4,60,seq(from=100, to=2500, by=100), 18.29, 405)
-e_day_5 <- tot_e_cost(5,60,seq(from=100, to=2500, by=100), 18.29, 405)
+e_day_1 <- tot_e_cost(1,60,seq(from=80, to=2000, by=80), 18.29, 405)
+e_day_2 <- tot_e_cost(2,60,seq(from=80, to=2000, by=80), 18.29, 405)
+e_day_3 <- tot_e_cost(3,60,seq(from=80, to=2000, by=80), 18.29, 405)
+e_day_4 <- tot_e_cost(4,60,seq(from=80, to=2000, by=80), 18.29, 405)
+e_day_5 <- tot_e_cost(5,60,seq(from=80, to=2000, by=80), 18.29, 405)
 ```
 
-Vectors with the Fuel Veiacle Day 1, Different distances
+Vectors with the Fuel Vehicle Day 1, Different distances
 
 ```{r}
-fuel_day_1 <- tot_fuel_cost(1, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
-fuel_day_2 <- tot_fuel_cost(2, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
-fuel_day_3 <- tot_fuel_cost(3, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
-fuel_day_4 <- tot_fuel_cost(4, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
-fuel_day_5 <- tot_fuel_cost(5, 40, seq(from=100, to=2500, by = 100), 51.50, 446)
+fuel_day_1 <- tot_fuel_cost(1, 40, seq(from=80, to=2000, by = 80), 51.50, 446)
+fuel_day_2 <- tot_fuel_cost(2, 40, seq(from=80, to=2000, by = 80), 51.50, 446)
+fuel_day_3 <- tot_fuel_cost(3, 40, seq(from=80, to=2000, by = 80), 51.50, 446)
+fuel_day_4 <- tot_fuel_cost(4, 40, seq(from=80, to=2000, by = 80), 51.50, 446)
+fuel_day_5 <- tot_fuel_cost(5, 40, seq(from=80, to=2000, by = 80), 51.50, 446)
 ```
 
 Create the Data Frame
@@ -131,12 +133,21 @@ ggplot(comp_1_df, aes(x=distance))+
 # m = (y2 -y1) / (x2 - x1)
 
 # Calculate m
-m_e1 <- (comp_1_df$e1[[2]]-comp_1_df$e1[[1]]) / (comp_1_df$distance[[2]]- comp_1_df$distance[[1]] )
+m_e5 <- (comp_1_df$e5[[2]]-comp_1_df$e5[[1]]) / (comp_1_df$distance[[2]]- comp_1_df$distance[[1]] )
+m_e5
 
 # Calculate b of point 1 (80, 64.5)
-b_e1 <- comp_1_df$e1[[1]] - (m_e1 * comp_1_df$distance[[1]]) 
-b_e1
+b_e5 <- comp_1_df$e5[[1]] - (m_e1 * comp_1_df$distance[[1]]) 
+b_e5
 
+```
+
+Testing M for electric car
+
+```{r}
+b_electric <- ((1 * 60) + (0 * 18.29)/405) - (0.04516049 * ((1 * 60) + (0 * 18.29)/405))
+
+b_electric
 ```
 
 ```{r}
@@ -168,7 +179,7 @@ Create a function to get X value for the intersection point
 
 
 A <- rbind(c(-m_e1, 1), c(-m_f1, 1))
-B <- c(b_e1, b_f1)
+B <- c(60, 40)
 
 solve(A,B)
 
@@ -180,4 +191,53 @@ ggplot(data = comp_1_df, aes(x = distance)) +
   geom_line(aes(y=e1)) +
   xlim(-10,10) + 
   ylim(-10,100)
+```
+
+# Testing function price delta
+
+## Electric car specs:
+
+Total Days: 3
+
+Rental Car price (per day): \$60
+
+Total trip distance planned (miles): 105.5 \* 2
+
+Cost to charge a full battery Cost (dlls) : \$18.29
+
+Range (miles): Tesla Model S: 405 miles
+
+## Fuel car specs
+
+Total days: 3
+
+Rental car price (per day): \$40
+
+Total trip distance planned (miles): 105.5 \* 2
+
+Cost fill the tank (dlls) : \$51.50
+
+Range (miles): Honda Civic : 446 miles
+
+```{r}
+price_delta(3, 60, 105.5*2, 18.29,405,40,51.50,446)
+```
+
+```{r}
+slope_fuel <- (((1 * 40) + ((10000 * 51.50)/446)) - ((1 * 40) + (0 * 51.50)/446)) / 10000
+```
+
+```{r}
+A <- rbind(c(-m_e1, 1), c(-slope_fuel, 1))
+B <- c(100,40)
+
+results <- solve(A,B)
+
+results[1]
+```
+
+```{r}
+
+price_delta(1,100,1000,18.29,405,40,51.50,446)
+
 ```
