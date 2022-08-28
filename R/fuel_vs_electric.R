@@ -29,12 +29,6 @@
 #' The range of the Honda with a full tank is 450 miles
 #'
 #'
-#'Add some default configurations.
-#'
-#'Add example
-#'
-#'
-#'
 #' Default configuration = price_delta(3,76,311,20,400,48,48,450)
 #'
 #'
