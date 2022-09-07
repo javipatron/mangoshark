@@ -18,22 +18,28 @@
 #'
 #' Decision making at a Hertz Rental Car agency at the LA Airport.
 #' The trip is just for the weekend = 3 days
-#' There will be some additional trips around, so the estimated total distance is
-#' LA to SB = 105.5 Miles
+#' The estimated total distance is LA to SB = 105.5 Miles + local weekend trips
 #' Weekend trips = + 100 miles
 #' Total planned distance = 105.5 + 100 + 105.5 = 311 miles
-#' The rental prices at Hertz are; Tessla $76 per day, Honda Civic $48 per day
+#' The rental prices at Hertz are;
+#' Tessla $76 usd per day,
+#' Honda Civic $48 usd per day
 #' The cost to fully charge the Tessla is $20 usd
-#' The cost to fill up the tank of a Honda Civic $55dls
+#' The cost to fill up the tank of a Honda Civic $55 usd
 #' The range of the Tessla with a fully battery charged is 405 miles
 #' The range of the Honda with a full tank is 450 miles
 #'
 #'
 #' Default configuration = price_delta(3,76,311,20,400,48,48,450)
 #'
-#'
-price_delta <- function(tot_days = 3, electric_rent_cost = 76, dist_plan = 311, full_battery_cost = 20, range_electric = 400, fuel_rent_cost = 48, full_tank_cost = 48 , range_fuel = 450) {
-
+price_delta <- function(tot_days = 3,
+                        electric_rent_cost = 76,
+                        dist_plan = 311,
+                        full_battery_cost = 20,
+                        range_electric = 400,
+                        fuel_rent_cost = 48,
+                        full_tank_cost = 48 ,
+                        range_fuel = 450) {
   electric_cost <- ((tot_days * electric_rent_cost) + (dist_plan * full_battery_cost)/range_electric)
 
   fuel_cost <- ((tot_days * fuel_rent_cost) + ((dist_plan * full_tank_cost)/range_fuel))
@@ -52,7 +58,6 @@ A <- rbind(c(-slope_electric, 1), c(-slope_fuel, 1))
 B <- c(electric_rent_cost, fuel_rent_cost)
 
 intersection <- solve(A,B)
-
 
 print(paste0("The point of intersection for both cars is at ", round(intersection[1], 2), " miles, where the price is $", round(intersection[2],2), "  for both options"))
 
@@ -84,5 +89,4 @@ print(plot)
 return(list(price_intersection = round(intersection[2],2), distance_intersection = round(intersection[1], 2)))
 
 }
-
 
